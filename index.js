@@ -1,8 +1,10 @@
-require('dotenv').config()
+const config = require("./config/config");
 const express = require('express');
 const app = express()
-const port = process.env.APP_PORT
+
 const { findControllers } = require('./src/index')
+
+const port = config.appPort || 3001
 
 app.use(express.json());
 app.use(
