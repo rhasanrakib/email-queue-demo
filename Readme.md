@@ -23,7 +23,17 @@ MAILTRAP_USER = "mailtrap user"
 MAILTRAP_PASS = "mailtrap password"
 INTERVAL_TIME_IN_MIN = "The system will check retry mail after this certain minutes e.g. 5"
 
-``` 
+```
+and also please update the config/config.json file
+```json
+"development": {
+    "username": "root",
+    "password": "root",
+    "database": "email_queue",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+```
 
 ### Installation
 ```sh
