@@ -101,6 +101,7 @@ curl --location 'http://localhost:3001/customer/register' \
 ```
 
 ### Start the mailing service
+
 Though the mailing service will start automatically every 1 hour. If no mail is pending then it will stop. But for starting immediately, you can use thi api
 
 ```bash
