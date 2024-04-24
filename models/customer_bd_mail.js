@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: false,
             allowNull: false,
         },
+        message: {
+            type: DataTypes.STRING,
+            defaultValue: "Happy Birthday",
+            allowNull: true,
+        },
         dob: {
             type: DataTypes.DATEONLY,
             defaultValue: DataTypes.NOW,
@@ -25,14 +30,14 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             values: Object.keys(MAIL_STATUS),
         },
-        max_try: {
+        remain_attempt: {
             type: DataTypes.INTEGER,
             defaultValue: 5,
             allowNull: false,
         }
     }, {
-        tableName: 'customer_bd_mail', 
-        timestamps: false  
+        tableName: 'customer_bd_mail',
+        timestamps: false
     });
     return CustomerBdInfo
 }

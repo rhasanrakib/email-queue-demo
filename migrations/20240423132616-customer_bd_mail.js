@@ -19,6 +19,11 @@ module.exports = {
         defaultValue: false,
         allowNull: false,
       },
+      message:{
+        type: Sequelize.DataTypes.STRING,
+        defaultValue: "Happy Birthday",
+        allowNull: true,
+      },
       dob: {
         type: Sequelize.DataTypes.DATEONLY,
         defaultValue: Sequelize.DataTypes.NOW,
@@ -34,7 +39,7 @@ module.exports = {
           'SUCCESS'
         ],
       },
-      max_try: {
+      remain_attempt: {
         type: Sequelize.DataTypes.INTEGER,
         defaultValue: 5,
         allowNull: false,
