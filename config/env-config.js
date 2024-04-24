@@ -21,6 +21,7 @@ const envVarsSchema = joi
         MAILTRAP_USER: joi.string().required(),
         MAILTRAP_PASS: joi.string().required(),
         MAILTRAP_EMAIL: joi.string().required(),
+        INTERVAL_TIME_IN_MIN: joi.number().required()
     })
     .unknown();
 
@@ -43,5 +44,6 @@ module.exports = {
     mailtrapHost: envVars.MAILTRAP_HOST,
     mailtrapUser: envVars.MAILTRAP_USER,
     mailtrapPass: envVars.MAILTRAP_PASS,
-    MailTrapEmail: envVars.MAILTRAP_EMAIL
+    mailTrapEmail: envVars.MAILTRAP_EMAIL,
+    mailCheckInterval : envVars.INTERVAL_TIME_IN_MIN
 }
