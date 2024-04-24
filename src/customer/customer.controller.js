@@ -3,10 +3,11 @@ const { CustomerService } = require('./customer.service')
 const { successResponse } = require('../../common/success-response')
 const { errorResponse } = require('../../common/error-response')
 const cron = require('node-cron');
+const config = require("../../config/env-config")
 const { MailEvent } = require("./mail-event.service");
 
 const service = new CustomerService()
-const INTERVAL_TIME_IN_MIN = 0.5 * 60 * 1000
+const INTERVAL_TIME_IN_MIN = parseFloat(config.mailtrapPass) * 60 * 1000
 const NodeCache = require("node-cache");
 const nodeCache = new NodeCache();
 
