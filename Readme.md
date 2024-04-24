@@ -7,7 +7,7 @@ Node version >= <b>16<b>
 
 In your .env file please include this fields
 
-```json
+```bash
 NODE_ENV = development
 APP_PORT = 3001
 DB = email_queue
@@ -31,18 +31,16 @@ npm run dev
 
 ```
 ### Commands
-```json
-{
-    "For start": "npm run start",  
-    "For test": "npm run test", // currently unavailable  
-    "For start:dev": "npm run dev",  
-    "For seed": "npm run seed",  
-    "For migrate": "npm run migrate",  
-}
+```bash
+For start: npm run start,  
+For test: npm run test, // currently unavailable  
+For start:dev : npm run dev,  
+For seed: npm run seed,  
+For migrate: npm run migrate,  
 ```
 
 ### Project structure
-
+```
 Mail-Queue/
 ├── common/
 │   ├── constants.js
@@ -66,7 +64,7 @@ Mail-Queue/
     ├── mailtrap/
     │   └── mailtrap.service.js
     └── index.js
-
+```
 ## Response Pattern
 
 ## Error Response
