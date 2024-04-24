@@ -3,12 +3,12 @@ const CustomerBdInfo = db.customerBdMail
 const { MAIL_STATUS } = require('../../common/constants')
 const Joi = require('joi');
 const sequelize = require('sequelize')
-const { MailTrap } = require('../mailtrap/mailtrap.service')
+const config = require('../../config/env-config')
+const { dayjs } = require('../../common/dayjs');
 
 class CustomerService {
 
     constructor() {
-        this.mailTrap = new MailTrap()
         if (CustomerService._instance) {
             return CustomerService._instance
         }
@@ -17,7 +17,7 @@ class CustomerService {
     }
     /**
      * 
-     * @param {{name:string,email:string,dob:string, max_try?:number}} dto 
+     * @param {{name:string,email:string,dob:string, remain_attempt?:number}} dto 
      * @returns {Promise<{[string]:any}>}
      */
     async create(dto) {
@@ -28,7 +28,8 @@ class CustomerService {
                     email: dto.email,
                     dob: dto.dob,
                     mail_status: MAIL_STATUS.PENDING,
-                    ...(dto.max_try && { max_try: dto.max_try })
+                    ...(dto.remain_attempt && { remain_attempt: dto.remain_attempt }),
+                    ...(dto.message && { message: dto.message })
                 },
             );
             return customerCreation
@@ -73,45 +74,60 @@ class CustomerService {
 
     /**
      * 
-     * @param {string} today 
-     * @param {MAIL_STATUS} status 
+     * @param {string} month 
+     * @param {string} day 
      * @returns 
      */
-    async getAllByDateStatus(today, status) {
+    async findPendingBirthdayMail(month, day) {
         const customerInfo = await CustomerBdInfo.findAll(
             {
                 where: {
-                    dob: today,
-                    mail_status: MAIL_STATUS[status],
-                    max_try: {
-                        [sequelize.Op.not]: 0
-                    }
+                    [sequelize.Op.and]: [
+                        sequelize.where(
+                            sequelize.fn('DATE_FORMAT', sequelize.col('dob'), '%m-%d'), // MySQL date format function
+                            `${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+                        ), {
+                            mail_status: {
+                                [sequelize.Op.or]: ['FAILED', 'PENDING']
+                            },
+                            remain_attempt: {
+                                [sequelize.Op.not]: 0
+                            }
+                        }]
+                }
+            },
+        );
+        return customerInfo
+    }
+    /**
+     * 
+     * @param {string} month 
+     * @param {string} day 
+     * @returns 
+     */
+    async findBirthday(month, day) {
+        const customerInfo = await CustomerBdInfo.findAll(
+            {
+                where: {
+                    [sequelize.Op.and]: [
+                        sequelize.where(
+                            sequelize.fn('DATE_FORMAT', sequelize.col('dob'), '%m-%d'), // MySQL date format function
+                            `${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+                        ), {
+                            remain_attempt: {
+                                [sequelize.Op.not]: 0
+                            }
+                        }]
                 }
             },
         );
         return customerInfo
     }
 
-    /**
-     * 
-     * @param {number} id 
-     * @param {MAIL_STATUS} status 
-     * @returns 
-     */
-    async statusUpdate(id, status) {
-        const info = this.getOneById(id)
-        if (!info) {
-            return {
-                error: 'User not found'
-            }
-        }
-        await info.update({ mail_status: status });
-    }
-
 
     /**
      * 
-     * @param {{name:string,email:string,dob:string, max_try?:number}} dto 
+     * @param {{name:string,email:string,dob:string, remain_attempt?:number}} dto 
      * @returns {{[string]:any}}
      */
     dtoValidator(dto) {
@@ -127,7 +143,8 @@ class CustomerService {
 
             dob: Joi.date()
                 .required(),
-            max_try: Joi.number().optional()
+            remain_attempt: Joi.number().optional(),
+            message: Joi.string().optional()
         });
 
         const { error, value } = customerSchema.validate(dto);
@@ -146,7 +163,7 @@ class CustomerService {
 
     /**
      * 
-     * @param {{name:string,email:string,dob:string, max_try?:number}} dto 
+     * @param {{name:string,email:string,dob:string, remain_attempt?:number}} dto 
      * @returns {Promise<{[string]:any}>}
      */
     async customerCreation(dto) {
@@ -157,7 +174,7 @@ class CustomerService {
             }
         }
         const existingCustomer = await this.getOneByMail(dto.email)
-        if (existingCustomer.length) {
+        if (existingCustomer) {
             return {
                 error: "User already exist."
             }
@@ -165,8 +182,52 @@ class CustomerService {
         return this.create(dto)
     }
 
-    async mailSending() {
+    async getMailingData() {
+        const today = dayjs();
+        const month = today.month() + 1;
+        const day = today.date();
+        const allBdToday = await this.findPendingBirthdayMail(month, day)
+        return this.formatForMail(allBdToday)
+
     }
+
+    /**
+     * 
+     * @param { { "id": number, "name": string, "email": string,"dob": string,"mail_status": "PENDING"|"FAILED"|"SUCCESS","remain_attempt": number}[]} data 
+     * @returns
+     **/
+
+    formatForMail(data) {
+        return data.map(dt => {
+            return {
+                id: dt.id,
+                name: dt.name,
+                to: dt.email,
+                from: config.mailtrapUser,
+                dob: dt.dob,
+                mail_status: dt.mail_status,
+                remain_attempt: dt.remain_attempt
+            }
+        })
+    }
+
+
+    async resetBirthdayStatus() {
+        const today = dayjs();
+        const month = today.month() + 1;
+        const day = today.date();
+        const bdData = await this.findBirthday(month, day)
+        const updateableData = bdData.map(dt=>{
+            return {
+                ...dt,
+                mail_status: MAIL_STATUS.PENDING,
+                remain_attempt: 5
+            }
+        })
+        await CustomerBdInfo.bulkCreate(updateableData, { updateOnDuplicate: ["mail_status","remain_attempt"] })
+    }
+
+
 
 }
 

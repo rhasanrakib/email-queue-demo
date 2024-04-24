@@ -1,6 +1,6 @@
 'use strict';
 
-const _config = require('../config/config')
+const _config = require('../config/env-config')
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');

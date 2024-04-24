@@ -2,9 +2,9 @@ const nodemailer = require('nodemailer')
 const Mailgen = require('mailgen')
 
 class MailTrap {
-    constructor(mailUser, mailPass) {
+    constructor(mailHost, mailUser, mailPass) {
         this.transporter = nodemailer.createTransport({
-            host: 'smtp.mailtrap.io',
+            host: mailHost,
             port: 2525,
             auth: {
                 user: mailUser,
@@ -28,7 +28,7 @@ class MailTrap {
         const MailGenerator = new Mailgen({
             theme: "default",
             product: {
-                name: "Test Email",
+                name: "Rakib",
                 link: 'https://mailgen.js/'
             }
         })
@@ -51,19 +51,23 @@ class MailTrap {
      * @returns 
      */
     async isMailSent(from, to, message, name) {
+        const templateHtml = this.generateMailBody(name, message)
+        console.log(templateHtml);
         const mailOptions = {
             from: from,
             to: to,
             subject: 'Birthday Wish',
-            html: this.generateMailBody(name, message)
+            html: templateHtml
         };
         const mailRes = await this.transporter.sendMail(mailOptions);
+        console.log(mailRes);
         if (mailRes.accepted) {
             return true
         } else {
             return false
         }
     }
+
 }
 
 module.exports = {

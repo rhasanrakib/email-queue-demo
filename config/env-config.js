@@ -16,8 +16,11 @@ const envVarsSchema = joi
         DB_USER: joi.string().required(),
         DB_PASSWORD: joi.string().required(),
         DB_HOST: joi.string().required(),
-        DB_PORT: joi.number().required()
-
+        DB_PORT: joi.number().required(),
+        MAILTRAP_HOST: joi.string().required(),
+        MAILTRAP_USER: joi.string().required(),
+        MAILTRAP_PASS: joi.string().required(),
+        MAILTRAP_EMAIL: joi.string().required(),
     })
     .unknown();
 
@@ -37,4 +40,8 @@ module.exports = {
     dbPassword: envVars.DB_PASSWORD,
     dbHost: envVars.DB_HOST,
     dbPort: envVars.DB_PORT,
+    mailtrapHost: envVars.MAILTRAP_HOST,
+    mailtrapUser: envVars.MAILTRAP_USER,
+    mailtrapPass: envVars.MAILTRAP_PASS,
+    MailTrapEmail: envVars.MAILTRAP_EMAIL
 }
