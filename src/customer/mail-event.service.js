@@ -25,9 +25,7 @@ class MailEvent extends EventEmitter {
         const mailSent = await Promise.allSettled(mailSentPromise)
         const updateableData = []
         for (let i = 0; i < mailData.length; i++) {
-            console.log("\n\n");
-            console.log(mailSent[i]);
-            console.log("\n\n");
+
             if (mailSent[i].status === 'fulfilled' && mailSent[i].value) {
                 updateableData.push({
                     id: mailData[i].id,
@@ -43,9 +41,6 @@ class MailEvent extends EventEmitter {
                     mail_status: 'PENDING',
                     ...(mailData[i].remain_attempt - 1 === 0 && { mail_status: 'FAILED' })
                 })
-                console.log("\n\n");
-                console.log("failed", mailData[i].id);
-                console.log("\n\n");
             }
         }
         await CustomerBdInfo.bulkCreate(updateableData, { updateOnDuplicate: ["mail_status","remain_attempt"] })

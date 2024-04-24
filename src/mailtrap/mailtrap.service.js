@@ -52,7 +52,6 @@ class MailTrap {
      */
     async isMailSent(from, to, message, name) {
         const templateHtml = this.generateMailBody(name, message)
-        console.log(templateHtml);
         const mailOptions = {
             from: from,
             to: to,
@@ -60,7 +59,6 @@ class MailTrap {
             html: templateHtml
         };
         const mailRes = await this.transporter.sendMail(mailOptions);
-        console.log(mailRes);
         if (mailRes.accepted) {
             return true
         } else {

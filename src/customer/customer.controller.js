@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
     return successResponse(res, 'Customer registered succesfully', 201, response)
 });
 
-router.get('', async (req, res) => {
+router.patch('', async (req, res) => {
     const response = await mailSending()
     return successResponse(res, response.message, 201, [])
 })
@@ -30,9 +30,10 @@ cron.schedule('1 0 * * *', async () => {
 });
 
 // for sending mails if system restart or mail failed
-cron.schedule('0 * * * *', () => {
-    console.log('Running a task every hour');
+cron.schedule('0 * * * *', async () => {
+    await mailSending()
 });
+
 async function mailSending() {
     if (nodeCache.get('interval')) {
         return {
