@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: email_queue
+      MYSQL_USER: user
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: rootpassword
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+
+  express-app:
+    build: .
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+    volumes:
+      - ./app:/app
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: email_queue
+
+volumes:
+  db-data:
