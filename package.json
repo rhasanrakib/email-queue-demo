@@ -9,7 +9,8 @@
     "dev": "nodemon index.js",
     "migration-gen": "npx sequelize-cli migration:generate --name",
     "migrate": "npx sequelize-cli db:migrate",
-    "migrate-undo": "npx sequelize-cli db:migrate:undo"
+    "migrate-undo": "npx sequelize-cli db:migrate:undo",
+    "seed": "npx sequelize-cli db:seed:all"
   },
   "author": "",
   "license": "ISC",
@@ -34,6 +35,7 @@
     "@babel/core": "^7.24.4",
     "@babel/plugin-proposal-decorators": "^7.24.1",
     "@babel/preset-env": "^7.24.4",
+    "@faker-js/faker": "^8.4.1",
     "nodemon": "^2.0.22"
   }
 }

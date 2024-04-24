@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         message: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             defaultValue: "Happy Birthday",
             allowNull: true,
         },

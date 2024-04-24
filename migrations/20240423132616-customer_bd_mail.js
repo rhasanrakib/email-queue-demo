@@ -20,7 +20,7 @@ module.exports = {
         allowNull: false,
       },
       message:{
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.TEXT,
         defaultValue: "Happy Birthday",
         allowNull: true,
       },
