@@ -7,6 +7,8 @@ const { MailEvent } = require("./mail-event.service");
 
 const service = new CustomerService()
 const INTERVAL_TIME_IN_MIN = 0.5 * 60 * 1000
+const NodeCache = require("node-cache");
+const nodeCache = new NodeCache();
 
 router.post('/register', async (req, res) => {
 
@@ -18,7 +20,7 @@ router.post('/register', async (req, res) => {
 });
 
 router.get('', async (req, res) => {
-    const response =  await mailSending()
+    const response = await mailSending()
     return successResponse(res, response.message, 201, [])
 })
 
@@ -32,16 +34,23 @@ cron.schedule('0 * * * *', () => {
     console.log('Running a task every hour');
 });
 async function mailSending() {
+    if (nodeCache.get('interval')) {
+        return {
+            message: "Email sending"
+        }
+    }
+
     let intervalId = setInterval(async () => {
         console.log("Start interval");
         const response = await service.getMailingData()
         if (!response.length) {
             clearInterval(intervalId)
+            nodeCache.del('interval')
         }
         const mailEvent = new MailEvent(response)
         mailEvent.emit('send-mail')
     }, INTERVAL_TIME_IN_MIN)
-
+    nodeCache.set('interval', intervalId)
     return {
         message: "Email sending"
     }
