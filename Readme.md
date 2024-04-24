@@ -1,11 +1,13 @@
 # Email Queue
 
 ## Usage
-Node version >= <b>16<b>
+
+Node version >= <b>16</b>
 
 ### Setup env
 
 In your .env file please include this fields
+
 
 ```bash
 NODE_ENV = development
